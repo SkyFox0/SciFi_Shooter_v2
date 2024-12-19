@@ -15,6 +15,7 @@ public class SoundController : MonoBehaviour
         public AudioSource AudioSource_Hit;
         public AudioSource AudioSource_Breahedge;
         public AudioSource AudioSource_Heart;
+        public AudioSource AudioSource_Reload;
         public AudioClip Step1;
         public AudioClip Step2;
         public AudioClip Jump;
@@ -64,6 +65,11 @@ public class SoundController : MonoBehaviour
             AudioSource_Dead.Play();
             AudioSource_Breahedge.Stop();
             AudioSource_Heart.Play();
+        }
+
+        public void Reload()
+        {
+            AudioSource_Reload.Play();
         }
 
 

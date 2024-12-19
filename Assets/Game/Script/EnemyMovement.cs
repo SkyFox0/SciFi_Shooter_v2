@@ -11,6 +11,7 @@ public class EnemyMovement : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public Animator EnemyAnimator;
+    public SoundController SoundController;
     public Transform Player;
     public Transform Enemy;
     public Vector3 SearchPoint;
@@ -35,6 +36,7 @@ public class EnemyMovement : MonoBehaviour
     public bool _isMove; 
     public bool _isRotate;
     public bool _isShoot;
+    public bool _isReloading;
     public bool _isDead;
     public Vector3 _rotateDirection;
     public Quaternion targetRotation;
@@ -56,18 +58,25 @@ public class EnemyMovement : MonoBehaviour
     public Vector3 _targetDirection;
     public Quaternion _shootDerection;
 
+    [Header("Weapon")]
+    public int _ammo = 3;
+    public int _maxAmmo = 5;
+
     void Start()
     {   // О игроке узнаем из системы спавна
         //Player = GameObject.FindGameObjectWithTag("Player").transform;
         NavMeshAgent.speed = _enemySpeed;
         _isMove = true;
         _isDead = false;
+        _isReloading = false;
         _timer = 0f;
         EGA_EnemyLasers = GetComponent<EGA_EnemyLasers>();
         EnemyAnimator = GetComponentInChildren<Animator>();
+        SoundController = GetComponentInChildren<SoundController>();    
         EnemyAnimator.SetFloat("y", 1);
         _enemyChange = 15f;  // время до смены характеристик врага        
         _fireDistans = 30;  //максимальная дистанция стрельбы
+        _ammo = Random.Range(1, _maxAmmo);
         EnemyChange();
     }
 
@@ -152,7 +161,14 @@ public class EnemyMovement : MonoBehaviour
 
                     _isShoot = true;
 
-                    Invoke("Shoot", _shootTime);
+                    if (_ammo > 0)
+                    {
+                        Invoke("Shoot", _shootTime);
+                    }
+                    else
+                    {   
+                        Reloading();
+                    }                    
                 }
             }
             else
@@ -162,7 +178,22 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
-    public void Stop()
+    public void Reloading()
+    {
+        _isMove = false;
+        _isReloading = true;
+        SoundController.Reload();
+
+        EnemyAnimator.SetBool("isMove", false);        
+        EnemyAnimator.SetTrigger("Reload");
+        EnemyAnimator.SetBool("isReloading", true);
+        _ammo = _maxAmmo;
+        Invoke("Move", _moveTime);
+        
+        
+    }
+
+        public void Stop()
     {
         NavMeshAgent.speed = 0f;
         EnemyAnimator.SetFloat("y", 0);
@@ -191,33 +222,34 @@ public class EnemyMovement : MonoBehaviour
     }
 
     public void Shoot()
-    {
-        
+    {        
         _isRotate = false;
         //_shoot = true;
         Debug.Log("Выстрел!");
-        
-        
+        _ammo -= 1;
         _targetDirection = Player.transform.position - Enemy.transform.position;
+
         // задаём отклонение вызова
         // и кидаем луч повторно
         _spreadVector.y = Random.Range((_bulletSpread * -1), _bulletSpread) / 3f;  // отклонение по вертикали меньше в 3 раза
         _spreadVector.z = Random.Range((_bulletSpread * -1), _bulletSpread);  // отклонение по горизонтали
 
         _targetDirection.y += _spreadVector.y;  // отклонение по вертикали
-        _targetDirection.z += _spreadVector.z;  // отклонение по горизонтали
+        _targetDirection.z += _spreadVector.z;  // отклонение по горизонтали               
 
-        //Direction.y = Direction.y + _spreadVector.y;
-        //Direction.z = Direction.z + _spreadVector.z;
+        // проверка не сдох ли враг :)
+        if (_isDead)
+        {            
+            // стрельба по направлению ствола оружия
+            _targetDirection = FirePoint.forward;
+        }
 
-        //Direction = FirePoint.transform.rotation;
-
+        // преобразование Vector 3 в Quaternion!!!
         _shootDerection = Quaternion.LookRotation(_targetDirection);
-
-        Direction = _shootDerection;//Quaternion.LookRotation(FirePoint.forward);
-        ShootSound.Play();
+        //Direction = _shootDerection;   //Quaternion.LookRotation(FirePoint.forward);        
         EnemyAnimator.SetTrigger("Shoot");
-        EGA_EnemyLasers.ShootEnemy(Prefab, SearchPoint, Direction);
+        EGA_EnemyLasers.ShootEnemy(Prefab, SearchPoint, _shootDerection);
+        ShootSound.Play();
         //EGA_EnemyLasers.ShootEnemy(Prefab, SearchPoint, Direction);
 
         //Destroy(Instance);
@@ -225,7 +257,7 @@ public class EnemyMovement : MonoBehaviour
         //Instance.transform.parent = transform;
 
 
-        
+
 
         //if (Physics.Raycast(SearchPoint, _direction, out var hitInfo))
         if (Physics.Raycast(SearchPoint, _targetDirection, out var hitInfo))
@@ -261,11 +293,17 @@ public class EnemyMovement : MonoBehaviour
    // }
 
     public void Move()
-    {        
+    {
+        _isReloading = false;
         _isMove = true;
+
+        EnemyAnimator.SetBool("isReloading", false);        
+        EnemyAnimator.SetBool("isMove", true);
+        
         NavMeshAgent.speed = _enemySpeed;
         EnemyAnimator.SetFloat("y", 1);
         _timer = 0f;
         _isShoot = false;
+
     }
 }

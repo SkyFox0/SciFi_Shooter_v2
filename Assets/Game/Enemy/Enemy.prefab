@@ -524,6 +524,135 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!1 &2800538095112777557
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8001247115829542443}
+  - component: {fileID: 5269296478229613708}
+  m_Layer: 0
+  m_Name: Reload
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8001247115829542443
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2800538095112777557}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.009190917, y: 0.58907133, z: 5.626219}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 187099972899201539}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &5269296478229613708
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2800538095112777557}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: 5f28105854f1ed749a1790df3b55c0e2, type: 3}
+  m_Resource: {fileID: 8300000, guid: 5f28105854f1ed749a1790df3b55c0e2, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 0.535
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 30
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &2879897309663637537
 GameObject:
   m_ObjectHideFlags: 0
@@ -821,6 +950,7 @@ MonoBehaviour:
   _isMove: 0
   _isRotate: 0
   _isShoot: 0
+  _isReloading: 0
   _isDead: 0
   _rotateDirection: {x: 0, y: 0, z: 0}
   targetRotation: {x: 0, y: 0, z: 0, w: 0}
@@ -875,6 +1005,8 @@ MonoBehaviour:
   _spreadVector: {x: 0, y: 0, z: 0}
   _targetDirection: {x: 0, y: 0, z: 0}
   _shootDerection: {x: 0, y: 0, z: 0, w: 0}
+  _ammo: 3
+  _maxAmmo: 5
 --- !u!114 &8899486680258560258
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1391,6 +1523,7 @@ Transform:
   - {fileID: 6698581446050141385}
   - {fileID: 7533019499827331779}
   - {fileID: 381005390892531723}
+  - {fileID: 8001247115829542443}
   m_Father: {fileID: 3324741312527919919}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!82 &5317073282447623508
@@ -1511,6 +1644,7 @@ MonoBehaviour:
   AudioSource_Hit: {fileID: 1943777922452909509}
   AudioSource_Breahedge: {fileID: 5736615553554662235}
   AudioSource_Heart: {fileID: 6275542228436359313}
+  AudioSource_Reload: {fileID: 5269296478229613708}
   Step1: {fileID: 8300000, guid: c2bb5556a0df2274bb119744215a9d30, type: 3}
   Step2: {fileID: 8300000, guid: 86e173e16f752ff4b9a5088fd2bee8f5, type: 3}
   Jump: {fileID: 8300000, guid: 8b4208ce4e3298c4bb701a1046d99c15, type: 3}
