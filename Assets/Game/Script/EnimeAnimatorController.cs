@@ -49,8 +49,6 @@ namespace StarterAssets
             SoundController.LandingSound();
         }
 
-
-
         public void StartReload(string s)
         {
             Animator.SetBool("isReloading", true);
@@ -58,13 +56,25 @@ namespace StarterAssets
             Debug.Log("Перезарядка начата!");
         }
 
-
         public void EndReload(string s)
         {
            // My_Weapon_Controller.EndReload();
             Animator.SetBool("isReloading", false);
             Animator.SetBool("isNeedToReload", false);
+            //Animator.SetBool("isMove", true);
             Debug.Log("Перезарядка закончена!");
+        }        
+
+        public void DamageBegin(string s)
+        {            
+            Animator.SetBool("isDamage", true);
+            Debug.Log("начало урона");
+        }
+
+        public void DamageEnd(string s)
+        {
+            Animator.SetBool("isDamage", false);
+            Debug.Log("конец урона");
         }
 
         public void Step_1(string s)

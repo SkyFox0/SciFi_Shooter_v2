@@ -16,6 +16,7 @@ namespace StarterAssets
         public EnemySpawnSystem EnemySpawnSystem;
         public GameObject SpawnSystem;
         public Animator EnemyAnimator;
+        public EnimeAnimatorController EnimeAnimatorController;
         public EnemyMovement EnemyMovement;
         public Collider EnemyCollider;
 
@@ -25,6 +26,7 @@ namespace StarterAssets
             SpawnSystem = GameObject.Find("EnemySpawnSystem");
             EnemySpawnSystem = SpawnSystem.GetComponent<EnemySpawnSystem>();
             EnemyAnimator = GetComponentInChildren<Animator>();
+            EnimeAnimatorController = GetComponent<EnimeAnimatorController>();
             EnemyMovement = GetComponent<EnemyMovement>();
             EnemyCollider = GetComponent<Collider>();
         }
@@ -33,13 +35,25 @@ namespace StarterAssets
             public void TakeDamage(int damage)
         {
             //запустить звук урона
-            Invoke("HitSoundPlay", 0.3f);
+            HitSound.Play();
+            
+            //EnemyAnimator.Stop();
+            //EnemyAnimator.enabled = false;
+            //EnemyAnimator.enabled = true;
+
+
             //HitSound.Play();
 
             Health = Health - damage;
             Debug.Log("Take Damag! Health = " + Health);
             if (Health <= 0)
             {
+                DeadSound.Play();
+                EnemyAnimator.SetBool("isReloading", false);
+                EnemyAnimator.SetBool("isMove", false);
+                EnemyAnimator.SetBool("isDead", true);
+                EnemyCollider.enabled = false;
+
                 //запустить звук разрушения
                 //DeadSound.Play();
                 //вызов метода разрушения с задержкой 0,2с
@@ -50,10 +64,10 @@ namespace StarterAssets
                 //EnemyMovement.NavMeshAgent.Stop(); // Устарело!
                 EnemyMovement.NavMeshAgent.isStopped = true;
                 EnemyMovement._isDead = true;
-                DeadSound.Play();
-                EnemyAnimator.SetBool("isDead", true);
+                EnemyMovement._isMove = false;               
+                
                 EnemySpawnSystem.Spawn();
-                EnemyCollider.enabled = false;
+                
 
                 //уничтожение тела через 30 сек
                 Invoke("Dead", 30f);
@@ -61,22 +75,27 @@ namespace StarterAssets
                 //_ExplodeTarget.StartExplosion();
                 //Destroy(gameObject);
             }
+            else
+            {
+                EnemyMovement.Damage();
+                EnemyAnimator.SetBool("isReloading", false);
+                EnemyAnimator.SetTrigger("Damage");  // запуск анимации урона
+                Invoke("DamageSoundPlay", 0.1f);
+            }
         }
 
         public void Dead()
-        {         
-            
-            
-            
+        {   
             Destroy(gameObject);
         }
 
 
 
-        public void HitSoundPlay()
+        public void DamageSoundPlay()
         {
             DamageSound.Play();
-            HitSound.Play();
+            EnemyMovement._isDamage = false;
+
         }
     }
 

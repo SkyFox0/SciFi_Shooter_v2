@@ -1,11 +1,7 @@
-//using DestroyIt;
 using StarterAssets;
-//using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.AI;
-//using static UnityEditor.FilePathAttribute;
-//using UnityEngine.UIElements;
-//using System.Diagnostics;
+
 
 public class EnemyMovement : MonoBehaviour
 {
@@ -24,7 +20,7 @@ public class EnemyMovement : MonoBehaviour
     public float _searchTime;    // врем€ до смены направлени€
     public float _shootTime;     // врем€ прицеливани€
     public float _enemyChange;   // врем€ до рандомного изменени€ характеристик игрока
-    public Transform FirePoint;    
+    public Transform FirePoint;
 
     private GameObject Instance;
     public EGA_Laser LaserScript;
@@ -33,10 +29,11 @@ public class EnemyMovement : MonoBehaviour
     [Header("Move")]
     public float _enemySpeed = 2f;  // Cкорость врага
     public float _enemyRotationSpeed = 2.0f; // —корость поворота врага
-    public bool _isMove; 
+    public bool _isMove;
     public bool _isRotate;
     public bool _isShoot;
     public bool _isReloading;
+    public bool _isDamage;
     public bool _isDead;
     public Vector3 _rotateDirection;
     public Quaternion targetRotation;
@@ -72,7 +69,7 @@ public class EnemyMovement : MonoBehaviour
         _timer = 0f;
         EGA_EnemyLasers = GetComponent<EGA_EnemyLasers>();
         EnemyAnimator = GetComponentInChildren<Animator>();
-        SoundController = GetComponentInChildren<SoundController>();    
+        SoundController = GetComponentInChildren<SoundController>();
         EnemyAnimator.SetFloat("y", 1);
         _enemyChange = 15f;  // врем€ до смены характеристик врага        
         _fireDistans = 30;  //максимальна€ дистанци€ стрельбы
@@ -95,7 +92,7 @@ public class EnemyMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!_isDead)
+        if (!_isDead && !_isDamage)
         {
             _timer = _timer + Time.deltaTime;
             if ((_timer > _searchTime) && _isMove)
@@ -103,10 +100,7 @@ public class EnemyMovement : MonoBehaviour
                 NavMeshAgent.SetDestination(Player.position);
                 Search();
             }
-            else
-            {
-
-            }
+            
             if (_isShoot)
             {
                 SearchPoint = Enemy.transform.position + new Vector3(0f, 1.6f, 0f);
@@ -127,7 +121,20 @@ public class EnemyMovement : MonoBehaviour
             //NavMeshAgent.SetDestination(Player.position);
             //Debug.DrawRay(Enemy.transform.position, Enemy.transform.forward * 30, Color.yellow);
             //Debug.DrawRay(Enemy.transform.position, direction * 30, Color.green);
+
+            if (_isShoot | _isMove | _isRotate | _isReloading )                
+            {
+                if (_isDamage)
+                {
+                    _isMove = false;
+                    _isRotate = false;
+                    _isShoot = false;
+                    _isReloading = false;
+                    Stop();
+                }
+            }
         }
+
     }
 
     public void Search()
@@ -143,7 +150,7 @@ public class EnemyMovement : MonoBehaviour
             //Debug.Log(_direction.ToString());
             if (hitInfo.collider.gameObject.name == "Player")  //if (hitInfo.collider.name == "Player")
             {
-                Debug.Log("¬ижу игрока!");
+                //Debug.Log("¬ижу игрока!");
 
                 if (_distance < _fireDistans)
                 {
@@ -157,6 +164,7 @@ public class EnemyMovement : MonoBehaviour
                     //Direction.eulerAngles = SearchPoint;  
 
                     _isRotate = true;
+
                     //Invoke("Rotate", _shootSpeed/2f);
 
                     _isShoot = true;
@@ -166,9 +174,9 @@ public class EnemyMovement : MonoBehaviour
                         Invoke("Shoot", _shootTime);
                     }
                     else
-                    {   
+                    {
                         Reloading();
-                    }                    
+                    }
                 }
             }
             else
@@ -184,16 +192,15 @@ public class EnemyMovement : MonoBehaviour
         _isReloading = true;
         SoundController.Reload();
 
-        EnemyAnimator.SetBool("isMove", false);        
+        EnemyAnimator.SetBool("isMove", false);
         EnemyAnimator.SetTrigger("Reload");
         EnemyAnimator.SetBool("isReloading", true);
         _ammo = _maxAmmo;
-        Invoke("Move", _moveTime);
-        
-        
+        Invoke("Move", 2.5f); // _moveTime);  
+
     }
 
-        public void Stop()
+    public void Stop()
     {
         NavMeshAgent.speed = 0f;
         EnemyAnimator.SetFloat("y", 0);
@@ -202,8 +209,9 @@ public class EnemyMovement : MonoBehaviour
     }
 
     public void Rotate()
-    { 
+    {
         //ѕоворот в сторону игрока
+        EnemyAnimator.SetFloat("y", 1);
         // ¬ычисл€ем направление на игрока
         _rotateDirection = Player.transform.position - Enemy.transform.position;
         _rotateDirection.y = 0; // ≈сли хотите игнорировать вертикальную ось
@@ -217,15 +225,14 @@ public class EnemyMovement : MonoBehaviour
 
             // ѕлавно поворачиваем врага в сторону игрока
             Enemy.transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * _enemyRotationSpeed);
-              
         }
     }
 
     public void Shoot()
-    {        
+    {
         _isRotate = false;
         //_shoot = true;
-        Debug.Log("¬ыстрел!");
+        //Debug.Log("¬ыстрел!");
         _ammo -= 1;
         _targetDirection = Player.transform.position - Enemy.transform.position;
 
@@ -239,7 +246,7 @@ public class EnemyMovement : MonoBehaviour
 
         // проверка не сдох ли враг :)
         if (_isDead)
-        {            
+        {
             // стрельба по направлению ствола оружи€
             _targetDirection = FirePoint.forward;
         }
@@ -278,32 +285,53 @@ public class EnemyMovement : MonoBehaviour
                 }
 
             }
-            else 
+            else
             {
                 // промазал по игроку
-                Debug.Log("ѕромазал по игроку!");
+                //Debug.Log("ѕромазал по игроку!");
             }
         }
-        Invoke("Move", _moveTime);
+        if (!_isDead)
+        {
+            Invoke("Move", _moveTime);
+        }
+
     }
 
     //public void DestroyLaser()
-   // {
+    // {
     //    LaserScript.DisablePrepare();        
-   // }
+    // }
 
     public void Move()
     {
         _isReloading = false;
         _isMove = true;
 
-        EnemyAnimator.SetBool("isReloading", false);        
+        EnemyAnimator.SetBool("isReloading", false);
         EnemyAnimator.SetBool("isMove", true);
-        
+
         NavMeshAgent.speed = _enemySpeed;
         EnemyAnimator.SetFloat("y", 1);
         _timer = 0f;
         _isShoot = false;
 
     }
+
+    public void Damage()
+    {
+        _isDamage = true;
+        _isMove = false;
+        _isRotate = false;
+        _isShoot = false;
+        _isReloading = false;
+        Stop();
+        Invoke("DamageOff", 0.3f);
+    }
+
+    public void DamageOff()
+    {
+        _isDamage = false;
+    }
+
 }

@@ -11,6 +11,7 @@ namespace StarterAssets
         public FirstPersonController FirstPersonController;
         public My_Weapon_Controller My_Weapon_Controller;
         public SoundController SoundController;
+        public StarterAssetsInputs StarterAssetsInputs;
 
         private void Start()
         {
@@ -35,7 +36,8 @@ namespace StarterAssets
         {
             Debug.Log("Подготовка к прыжку закончена!");
             Animator.SetBool("isJump", true);
-            Animator.SetBool("isGround", false);            
+            Animator.SetBool("isGround", false);
+            Animator.SetBool("isSigth", false);
             FirstPersonController.Jump();
             SoundController.JumpSound();
         }
@@ -52,6 +54,8 @@ namespace StarterAssets
         public void StartReload(string s)
         {
             Animator.SetBool("isReloading", true);
+            Animator.SetBool("isSight", false);
+            FirstPersonController.isReloading = true;
 
             Debug.Log("Перезарядка начата!");
         }
@@ -62,7 +66,12 @@ namespace StarterAssets
             My_Weapon_Controller.EndReload();
             Animator.SetBool("isReloading", false);
             Animator.SetBool("isNeedToReload", false);
+            FirstPersonController.isReloading = false;
             Debug.Log("Перезарядка закончена!");
+            if (StarterAssetsInputs.sight) 
+            {
+                Animator.SetBool("isSight", true);
+            }
         }
 
         public void Step_1(string s)

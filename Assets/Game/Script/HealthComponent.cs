@@ -11,13 +11,18 @@ namespace StarterAssets
         public AudioSource HitSound;
         public AudioSource DestroySound;
         public ExplodeTarget _ExplodeTarget;
+        public OldSpeakerSoundController OldSpeakerSoundController;
 
         public void TakeDamage(int damage)
         {
             //запустить звук урона
             Invoke("HitSoundPlay", 0.3f);
             //HitSound.Play();
-
+            if (OldSpeakerSoundController != null)
+            {
+                OldSpeakerSoundController.PlayNext();
+            }
+            
             Health = Health - damage;
             Debug.Log("Take Damag! Health = " + Health);
             if (Health <= 0)

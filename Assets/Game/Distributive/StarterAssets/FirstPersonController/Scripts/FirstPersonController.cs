@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
+using static UnityEngine.Rendering.DebugUI;
 #endif
 
 namespace StarterAssets
@@ -13,11 +14,17 @@ namespace StarterAssets
 	{
 		[Header("Player")]
 		public Animator Animator;
-		[Tooltip("Move speed of the character in m/s")]
+        public float targetSpeed;  // расчетная скорость игрока
+        [Tooltip("Move speed of the character in m/s")]
 		public float MoveSpeed = 4.0f;
 		[Tooltip("Sprint speed of the character in m/s")]
 		public float SprintSpeed = 6.0f;
-		[Tooltip("Rotation speed of the character")]
+        [Tooltip("Move and reload speed of the character in m/s")]
+        public float MoveReloadSpeed = 2.0f;
+        public float MoveSigthSpeed = 2.0f;
+        public bool isReloading;
+        public bool isSight;
+        [Tooltip("Rotation speed of the character")]
 		public float RotationSpeed = 1.0f;
 		[Tooltip("Acceleration and deceleration")]
 		public float SpeedChangeRate = 10.0f;
@@ -74,6 +81,8 @@ namespace StarterAssets
 		private StarterAssetsInputs _input;
 		private GameObject _mainCamera;
 		public SoundController SoundController;
+		//public Ui_Control Ui_Control;
+        public My_Weapon_Controller My_Weapon_Controller;
 
         private const float _threshold = 0.01f;
 
@@ -124,10 +133,10 @@ namespace StarterAssets
 			{
                 JumpAndGravity();
                 GroundedCheck();
-				if (!Animator.GetBool("isReloading"))
-				{
-                    Move();
-                }                
+				//if (!Animator.GetBool("isReloading"))
+				//{
+                Move();
+                //}                
             }
 
 
@@ -144,10 +153,14 @@ namespace StarterAssets
 			Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z);
 			Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers, QueryTriggerInteraction.Ignore);
 			if ((!Grounded) && (!_isFalling))
-			{
-				// падаем
+            {
+                // падаем
 				_isFalling = true;
-			}
+				My_Weapon_Controller.OnSightOff(null);
+
+                //Ui_Control.Scope_Off();
+
+            }
 			else 
 			{
 				if ((Grounded) && (_isFalling))
@@ -159,8 +172,13 @@ namespace StarterAssets
                     Animator.SetBool("isJump", false);
                     Animator.SetBool("isGround", true);
                     SoundController.LandingSound();
-                    
-				}
+					if (_input.sight)
+					{
+                        My_Weapon_Controller.OnSight(null);
+                    }
+
+
+                }
 
             }
 		}
@@ -196,7 +214,7 @@ namespace StarterAssets
 			if (_input.move.magnitude > 0f)
 			{
                 Animator.SetBool("isMove", true);
-                if (_input.sprint)
+                if (_input.sprint && !isReloading && !isSight)
                 {
                     Animator.SetBool("isRun", true);
                 }
@@ -214,13 +232,21 @@ namespace StarterAssets
 			Animator.SetFloat("y", _input.move.y);
 
 			// set target speed based on move speed, sprint speed and if sprint is pressed
-			float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+			if (!isReloading && !isSight)
+			{
+                targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+                //targetSpeed = _input.reload ? MoveReloadSpeed : targetSpeed;
+            }
+            else 
+			{   //targetSpeed = MoveReloadSpeed;
+                targetSpeed = isReloading ? MoveReloadSpeed : MoveSigthSpeed;
+            }            
 
-			// a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
+            // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
 
-			// note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
-			// if there is no input, set the target speed to 0
-			if (_input.move == Vector2.zero) targetSpeed = 0.0f;
+            // note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
+            // if there is no input, set the target speed to 0
+            if (_input.move == Vector2.zero) targetSpeed = 0.0f;
 
 			// a reference to the players current horizontal velocity
 			float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;

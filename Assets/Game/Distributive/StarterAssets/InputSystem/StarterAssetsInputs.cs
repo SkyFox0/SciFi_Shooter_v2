@@ -1,6 +1,7 @@
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
+using static UnityEngine.Rendering.DebugUI;
 #endif
 
 namespace StarterAssets
@@ -41,7 +42,12 @@ namespace StarterAssets
 
 		public void OnJump(InputValue value)
 		{
-			JumpInput(value.isPressed);
+			if (!jump)
+			{ 
+				jump = true;
+				Invoke("JumpOff", 0.1f);
+			}
+				//JumpInput(value.isPressed);
 		}
 
 		public void OnSprint(InputValue value)
@@ -58,14 +64,28 @@ namespace StarterAssets
         {
             SightInput(value.isPressed);
         }
+
+        public void OnSightOff(InputValue value)
+        {
+            SightOffInput(value.isPressed);
+        }
+
         public void OnReload(InputValue value)
         {
-            ReloadInput(value.isPressed);
+			if (!reload)
+			{
+				reload = true;
+				Invoke("ReloadOff", 0.1f);
+			}			    
         }
 
         public void OnDamage(InputValue value)
         {
-            DamageInput(value.isPressed);
+			if (!damage)
+			{
+				damage = true;
+				Invoke("DamageOff", 0.1f);
+			}
         }
 #endif
 
@@ -75,13 +95,18 @@ namespace StarterAssets
 		} 
 
 		public void LookInput(Vector2 newLookDirection)
-		{
+        {
 			look = newLookDirection;
 		}
-
-		public void JumpInput(bool newJumpState)
+        public void JumpInput(bool newJumpState)
 		{
 			jump = newJumpState;
+
+        }
+
+        public void JumpOff()
+		{
+			jump = false;
 		}
 
 		public void SprintInput(bool newSprintState)
@@ -96,15 +121,31 @@ namespace StarterAssets
 
         public void SightInput(bool newSightState)
         {
-            sight = newSightState;
+            sight = true;
         }
-        public void ReloadInput(bool newReloadState)
+        public void SightOffInput(bool newSightState)
         {
-            reload = newReloadState;
+            sight = false;
         }
-        public void DamageInput(bool newReloadState)
+
+        //public void ReloadInput(bool newReloadState)
+        //{
+        //    reload = newReloadState;
+        //}
+
+        //public void ReloadStart()
+		//{
+		//	reload = true;
+        //}
+
+        public void ReloadOff()
         {
-            damage = newReloadState;
+            reload = false;
+        }
+
+        public void DamageOff()
+        {
+            damage = false;
         }
 
         

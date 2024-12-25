@@ -932,6 +932,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EnemyAnimator: {fileID: 0}
+  SoundController: {fileID: 0}
   Player: {fileID: 0}
   Enemy: {fileID: 3324741312527919919}
   SearchPoint: {x: 0, y: 0, z: 0}
@@ -951,6 +952,7 @@ MonoBehaviour:
   _isRotate: 0
   _isShoot: 0
   _isReloading: 0
+  _isDamage: 0
   _isDead: 0
   _rotateDirection: {x: 0, y: 0, z: 0}
   targetRotation: {x: 0, y: 0, z: 0, w: 0}
@@ -1026,6 +1028,7 @@ MonoBehaviour:
   EnemySpawnSystem: {fileID: 0}
   SpawnSystem: {fileID: 0}
   EnemyAnimator: {fileID: 0}
+  EnimeAnimatorController: {fileID: 0}
   EnemyMovement: {fileID: 0}
   EnemyCollider: {fileID: 0}
 --- !u!136 &4825542973745848144
@@ -1112,10 +1115,10 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 616d33200a6a91241ab53646c86cb610, type: 3}
-  m_Resource: {fileID: 8300000, guid: 616d33200a6a91241ab53646c86cb610, type: 3}
+  m_audioClip: {fileID: 8300000, guid: ba92a9858fbdf73459a48cd0b6bfbb23, type: 3}
+  m_Resource: {fileID: 8300000, guid: ba92a9858fbdf73459a48cd0b6bfbb23, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -1970,10 +1973,10 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 616d33200a6a91241ab53646c86cb610, type: 3}
-  m_Resource: {fileID: 8300000, guid: 616d33200a6a91241ab53646c86cb610, type: 3}
+  m_audioClip: {fileID: 8300000, guid: ba92a9858fbdf73459a48cd0b6bfbb23, type: 3}
+  m_Resource: {fileID: 8300000, guid: ba92a9858fbdf73459a48cd0b6bfbb23, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 0
   Mute: 0
